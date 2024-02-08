@@ -10,14 +10,31 @@ class Knights_Tour:
 
     def solve(self, row, column):
         # mark
+        self.board[row][column] = str(self.current_move)
+
+        if self.current_move == 64:
+            return True
+
+        self.current_move += 1
+
+        current_position = Position(self.board, row, column)
         next_moves = []
         for move in Position.POSSIBLE_MOVES:
-            if Position.can_move_to(row+move[0], column+move[1]):
-                next_moves.append(Position(self.board, row, column))
+            if current_position.can_move_to(row+move[0], column+move[1]):
+                next_moves.append(Position(self.board, row+move[0], column+move[1]))
         next_moves.sort()
-        for move in next_moves():
-            # try move
-            # undo the move if not solved
+        for move in next_moves:
+            if self.solve(move.row, move.column):
+                return True
+
+        self.current_move -= 1
+        self.board[row][column] = ' '
+        return False
+
+    def __str__(self):
+        return "\n".join(str(row) for row in self.board)
+
+
 
 class Position:
 
@@ -32,7 +49,7 @@ class Position:
     def valid_moves(self):
         moves = 0
         for move in self.POSSIBLE_MOVES:
-            if self.can_move_to(self.row + move[0], self.column + move[1])
+            if self.can_move_to(self.row + move[0], self.column + move[1]):
                 moves += 1
         return moves
 
@@ -49,3 +66,8 @@ class Position:
 
     def __eq__(self, other):
         return self.valid_moves() == other.valid_moves()
+
+
+tour = Knights_Tour()
+tour.solve(3,3)
+print(tour)
